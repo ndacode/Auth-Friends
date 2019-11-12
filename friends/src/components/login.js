@@ -16,31 +16,56 @@ class Login extends React.Component {
           ...this.state.credentials,
           [e.target.name]: e.target.value
         }
-      })
-}}
-
-render() {
-    return (
-      <div>
-        <h2>{this.state.isLoggedIn ? "LOGGED IN!" : "Please login"}</h2>
-        <form onSubmit={this.login}>
-          <input
-            type="text"
-            name="username"
-            value={this.state.credentials.username}
-            onChange={this.handleChange}
-          />
-          <input
-            type="password"
-            name="password"
-            value={this.state.credentials.password}
-            onChange={this.handleChange}
-          />
-          <button>Log in</button>
-        </form>
-      </div>
-    );
+      });
+    };
+  
+    login = e => {
+      e.preventDefault();
+      axios
+        .post(
+          "localhost:500/api/friends",
+          this.state.credentials
+        )
+        .then(response => {
+          console.log("response", response);
+          const { data } = response;
+  
+          sessionStorage.setItem("token", data.payload);
+          this.setState({ ...this.state, isLoggedIn: true });
+        });
+    };
+  
+    componentDidMount() {
+      if (sessionStorage.getItem("token")) {
+        this.setState({ ...this.state, isLoggedIn: true });
+      } else {
+        this.setState({ ...this.state, isLoggedIn: false });
+      }
+    }
+  
+    render() {
+      return (
+        <div>
+          <h2>{this.state.isLoggedIn ? "LOGGED IN!" : "Please login"}</h2>
+          <form onSubmit={this.login}>
+            <input
+              type="text"
+              name="username"
+              value={this.state.credentials.username}
+              onChange={this.handleChange}
+            />
+            <input
+              type="password"
+              name="password"
+              value={this.state.credentials.password}
+              onChange={this.handleChange}
+            />
+            <button>Log in</button>
+          </form>
+        </div>
+      );
+    }
   }
-
-
-export default Login;
+  
+  export default Login;
+  
