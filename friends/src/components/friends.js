@@ -1,46 +1,57 @@
 
 import React from 'react';
-import './App.css';
 import axios from 'axios';
 import Friended from './Friended';
 
+
+const axiosWithAuth = () => {
+    return axios.create({
+        headers: {
+            authorizations: sessionStorage.getItem("token")
+        }
+    });
+};
+
 class Friends extends React.Component {
-    constructor (){
-      super();
-      this.state={
-        friends: {}
+        state = {
+        friends: []
       }
-    }
+    
     
     componentDidMount() {
-      axios
-        .get('http://localhost:5000/api/friends')
-        .then(res => {
-          console.log(res)
-          this.setState({
-            friends: res
+        this.getData();
+        if (!sessionStorage.getItem("token")) {
+          console.error("Please Login!!!");
+        } else {
+          console.info("We are logged in");
+        }
+      }
+
+
+    getData = () => {
+        axios.get("http://localhost:5000/api/friends", {
+          headers: { authorization: sessionStorage.getItem("token") }
+        })
+         
+          .then(response => {
+            this.setState({ friends: response.data });
           });
-        })
-        .catch(err => {
-          console.log('The data was not returned', err.response);
-        })
-    }
-
-    render() {
-      return(
-      <>
-        <div>
-        {this.state.friends.map(friend => <Friended
-        key={friend.id}
-        name={friend.name}
-        login={friend.age}
-        bio={friend.email}/>
+      }
+    
+    
+    
+      render() {
+   
+        return (
+            <div >
+                {this.state.friends.map(friend => <Friended
+                key={friend.id}
+                name={friend.name}
+                age={friend.age}
+                email={friend.email}/>     
+                )}
+            </div>
         )}
-        </div>
-      </>
-      )
-  } 
-}
-
-
-export default Friends;
+    }
+    export default Friends;
+    

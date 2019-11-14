@@ -23,7 +23,7 @@ class Login extends React.Component {
       e.preventDefault();
       axios
         .post(
-          "localhost:500/api/friends",
+          "http://localhost:5000/api/login",
           this.state.credentials
         )
         .then(response => {
